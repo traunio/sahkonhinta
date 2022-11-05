@@ -28,19 +28,6 @@ def read_consumption(filename):
     return df
 
 
-def read_prices():
-    """Read elspot price data from a file. In the future reading will happen from 
-    a database. Hence the one-liner today
-
-    :returns: pandas dataframe of the price data
-    """
-
-    df = pd.read_csv(PRICES, sep=';')
-    df.index = pd.to_datetime(df.time)
-
-    return df
-
-
 def resampling_rate(index):
     """Helper function to choose between appropriate resampling for results.
 
@@ -60,7 +47,7 @@ def resampling_rate(index):
     return "W"
     
     
-def analyze(filename, marginal):
+def analyze(filename, df_db, marginal):
     """The main function of this file. Called by flask, and return a dict
     with the wanted answers
 
@@ -71,10 +58,10 @@ def analyze(filename, marginal):
 
     # marginaali myöhemmin
     consumption = read_consumption(filename)
-    prices = read_prices()
+    prices = df_db
 
     res = prices.merge(consumption, left_index=True, right_index=True)
-    res['costs'] = ((res.spot_taxes+marginal) * res.consumed)/100  # euros
+    res['costs'] = ((res.price+marginal) * res.consumed)/100  # euros
 
     outcome = dict()
 
