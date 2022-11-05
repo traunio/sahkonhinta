@@ -12,7 +12,7 @@ def read_consumption(filename):
     """
 
     try: 
-        df = pd.read_csv(filename, sep=';', decimal=',', usecols=['Alkuaika','Määrä'])
+        df = pd.read_csv(filename, sep=';')
         df.index = pd.to_datetime(df.Alkuaika)
         df.index = df.index.tz_convert('Europe/Helsinki')
 

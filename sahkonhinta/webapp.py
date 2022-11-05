@@ -85,17 +85,23 @@ def upload():
 
     if file and allowed_extension(file.filename):
         filename = secure_filename(file.filename)
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        full_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(full_path)
+
+        try:
+            df = pd.read_csv(full_path, sep=';', decimal=',', usecols=['Alkuaika','Määrä'])
+            df.to_csv(full_path, sep=';', index=False)
+        except:
+            print('Dataframen lukemisessa häikkää')
 
         md5sum = hashlib.md5()
-        with open(os.path.join(app.config['UPLOAD_FOLDER'], filename), 'rb') as f:
+        with open(full_path, 'rb') as f:
             bytes = f.read()
             md5sum.update(bytes)
 
         md5name = md5sum.hexdigest()
-        os.rename(os.path.join(app.config['UPLOAD_FOLDER'], filename),
+        os.rename(full_path,
                   os.path.join(app.config['UPLOAD_FOLDER'], md5name))
-
 
         marginal = request.form.get('marginal')
         if marginal:
