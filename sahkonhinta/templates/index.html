@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+{% block body %}
+
+
+
+<div class="container col-xl-10 col-xxl-8 px-4 py-5">
+    <div class="row align-items-center g-lg-5 py-5">
+      <div class="col-lg-7 text-center text-lg-start">
+        <h1 class="display-4 fw-bold lh-1 mb-3">Pörssisähkö vs. kiinteä hinta</h1>
+        <p class="col-lg-10 fs-4">Kumpi olisi ollut halvempaa, pörssisähkö vai kiinteähintainen sopimus, kun tarkastellaan vuoden 2022 hintoja? Lataa oma sähkönkulutuksesi ja ota selvää. Oman sähkökulutuksesi saat haettua kätevästi Fingridin <a href="https://oma.datahub.fi">datahubista</a>. Lataa se sen jälkeen tälle sivustolle ja saat tulokset </p> 
+      </div>
+      <div class="col-md-10 mx-auto col-lg-5">
+        <form class="p-4 p-md-5 border rounded-3 bg-light" action="/upload" method="POST" enctype="multipart/form-data" action="/upload">
+
+	  <div class="mb-3">
+	    <label for="formFile" class="form-label">Sähkönkulutuksesi csv-muodossa</label>
+	    <input class="form-control" type="file" id="formFile" name="file">
+	  </div>
+          <button class="w-100 btn btn-lg btn-primary" type="submit">Lataa</button>
+        </form>
+      </div>
+    </div>
+</div>
+
+
+<div class="container">
+
+
+<h2>Miten tämä toimii</h2>
+<p>Palvelu sisältää vuoden 2022 sähköpörssin hintatiedot Suomen maa-alueella. Esimerkkilaskuissa käytetään Vattenfallin Tuntisähkö Mix -tuottetta ilman kk-maksuja, eli pörssisähkö + Vattenfallin marginaali. Kk-maksuja ei ole laskuissa huomioitu, vaan niiden on karkeasti oletettu olevan yhtä suuria pörssisähkössä ja kiinteän hinnassa.</p>
+
+
+<h2>Mitä tuloksia saan?</h2>
+
+<p> Hienoja tuloksia. Kokeile niin näet! Tähän tulee kohta vielä esimerkkejä niistä kuvaajista, joita saat. Samalla saat tietää:</p>
+<ul>
+  <li>Kokonaiskulutukseksi lataamallasi ajanjaksolla
+  <li>Sähkönhinta pörssisähköllä
+  <li>Pörssisähkön kanssa yhtä kallis vaiohinta
+</ul>
+
+
+<h2>Mitä minusta tallennetaan?</h2>
+
+<p>Tällä hetkellä lataamasi kulutustiedot jäävät hetkellisesti talteen. Tähän on kaksi syytä:</p>
+<ul>
+  <li>Omat tulokset voi jakaa linkkinä ja omat tulokset saa näkyville ilman tietojen lataamista uudelleen
+  <li>Palveluun ladatuista kulutustiedoista on tarkoitus tehdä vertailutuloksia. Esim. miten vertautuu keskimääräiseen käyttäjään (tämä ominaisuus tulee joskus)
+</ul>
+
+
+</div>
+{% endblock %}

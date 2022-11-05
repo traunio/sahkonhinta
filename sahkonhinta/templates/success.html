@@ -1,0 +1,120 @@
+{% extends "layout.html" %}
+{% block body %}
+
+
+<script src="https://cdn.plot.ly/plotly-2.16.1.min.js"></script>
+
+<div class="container">
+  <h2 class="pb-3 mt-5 border-bottom">Sähkönkäyttösi {{outcome.begin}}-{{outcome.end}}</h1>
+
+</div>
+<div class="container text-center">
+  <div class="row">
+    <div class="col">
+      <h3>{{outcome.tot_power}} kWh</h3>
+      <p>Ajanjaksolla käytetty sähkö</p> 
+    </div>
+    <div class="col">
+      <h3>{{outcome.tot_price_s}} €</h3>
+      <p>Kulutuksesi hinta pörssisähköllä</p>
+    </div>
+    <div class="col">
+      <h3> {{outcome.const_price_s}} snt/kWh</h3>
+      <p> Keskimääräinen sähkön hinta koko jaksolta</p>
+    </div>
+  </div>
+</div>
+
+
+
+<div class="container">
+  <div class="mb-4" id="weeklyPrice"></div>
+</div>
+
+
+<script>
+
+  {#
+  var trace = {
+      x: {{outcome.usage}},
+      type: 'histogram'
+  };
+
+  var layout = {
+      title: 'Histogrammi päiväkohtaisesta sähkön käytöstä',
+      xaxis: {title: 'Sähköä käytetty kWh'},
+      yaxis: {title: 'Päivien lukumäärä [kpl]'},
+      height: 700
+
+  };
+
+   var data = [trace]; 
+
+  var config = {responsive: true}
+
+   Plotly.newPlot( 'dayUsage', data, layout); #}
+
+
+  var wlayout = {
+      title: 'Pörssisähkön keskimääräinen hinta omalla kulutuksella ',
+      font: {size: '14'},
+      xaxis: {
+	  title: 'Ajankohta',
+	  autorange: true,
+	  rangeslider: {range: ['{{outcome.first}}', '{{outcome.last}}']},
+	  type: 'date'
+      },
+      yaxis: {title: 'Sähkön hinta [snt/kWh]'},
+      height: 700,
+  };
+
+  var dtrace = {
+      y: {{outcome.dayPrice}},
+      x: {{outcome.dayX|safe}},
+      mode: 'lines',
+      name: 'Päiväkohtainen',
+  };
+
+  var wtrace = {
+      y: {{outcome.weekPrice}},
+      x: {{outcome.weekX|safe}},
+      line: {shape: 'hv'},
+      mode: 'lines',
+      type: 'scatter',
+      name: 'Viikkokohtainen',
+  };
+
+
+  var mtrace = {
+      y: {{outcome.monthPrice}},
+      x: {{outcome.monthX|safe}},
+      line: {shape: 'hv'},
+      mode: 'lines',
+      type: 'scatter',
+      name: 'Kuukausikohtainen',
+  };
+
+
+  var wdata = [wtrace, dtrace, mtrace];
+
+
+  Plotly.newPlot('weeklyPrice', wdata, wlayout)
+
+  {#
+p
+  var ptrace = {
+      x: {{outcome.diffis}},
+      type: 'histogram'
+  };
+
+  var playout = {
+      title: 'Histogrammi päiväkohtaisesta hintaerosta  pörssisähkön ja kiinteän välillä',
+      xaxis: {title: 'Pörssisähkö kalliimpi kuin kiinteä sähköä [euroa]'},
+      yaxis: {title: 'Päivien lukumäärä [kpl]'},
+      height: 700,
+  };
+  
+  var pdata = [ptrace];
+   Plotly.newPlot('priceDiff', pdata, playout, config) #}
+</script>
+{% endblock %}

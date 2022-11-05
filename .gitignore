@@ -1,0 +1,13 @@
+# emacs saves
+*.*~
+
+# python virtual env
+venv/
+
+# jupyter check_points and jupyter
+.ipynb_checkpoints
+*.ipynb
+
+# pycache
+__pycache__/
+

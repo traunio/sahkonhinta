@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+{% block body %}
+<div class="container">
+<h1>Yhtään isotooppia/alkuainetta ei löytynyt</h1>
+
+<p>Kokeile hakea uudestaan toisilla hakusanoilla tai mene <a href="{{url_for('.index')}}">aloitussivulle</a>. Ohessa myös hakuesimerkkejä.</p>
+
+<ul class="list-group">
+  <li class="list-group-item">Alkuaineen nimi tai kemiallinen merkki, esim. "<a href="{{url_for('.atom_element', element='cesium')}}">cesium"</a> tai "<a href="{{url_for('.atom_element', element='Na')}}">Na"</a></li>
+  <li class="list-group-item">Tiettyä isotooppia, esim. "<a href="{{url_for('.atom_partial', atom='N', number=16)}}">N-16</a>" tai "<a href="{{url_for('.atom_full', number_a=136, number_z=55, atom='Cs')}}">55-Cs-136</a>"</li>
+  <li class="list-group-item">Protonien määrä tai isotoopin massaluku (haku tapahtuu molemmilla), esim. "<a href="{{url_for('.atom_number', number=33)}}">33</a>" tai "<a href="{{url_for('.atom_number', number=101)}}">101</a>"</li>
+  <li class="list-group-item">Kaikki isotoopit massalukujen välillä, esim. "<a href="{{url_for('.atom_between', number=40, number2=47)}}">40-47</a>" tai "<a href="{{url_for('.atom_between', number=130, number2=133)}}">130-133</a>"
+</ul>
+</div>
+{% endblock %}
