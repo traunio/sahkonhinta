@@ -12,7 +12,7 @@ def read_consumption(filename):
     """
 
     try: 
-        df = pd.read_csv(filename, sep=';', decimal=',')
+        df = pd.read_csv(filename, sep=';', decimal=',', usecols=['Alkuaika','Määrä'])
         df.index = pd.to_datetime(df.Alkuaika)
         df.index = df.index.tz_convert('Europe/Helsinki')
 
@@ -60,19 +60,21 @@ def resampling_rate(index):
     return "W"
     
     
-def analyze(filename):
+def analyze(filename, marginal):
     """The main function of this file. Called by flask, and return a dict
     with the wanted answers
 
     :param filename: filename with path to the uploaded csv
+    :param marginal: Marginal added snt/kWh for spot electricity
     :returns: all chart data and numerical results in a dict
     """
 
+    # marginaali myöhemmin
     consumption = read_consumption(filename)
     prices = read_prices()
 
     res = prices.merge(consumption, left_index=True, right_index=True)
-    res['costs'] = (res.vattenfall * res.consumed)/100  # euros
+    res['costs'] = ((res.spot_taxes+marginal) * res.consumed)/100  # euros
 
     outcome = dict()
 

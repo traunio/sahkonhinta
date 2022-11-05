@@ -4,7 +4,7 @@ from werkzeug.utils import secure_filename
 from . import analysis
 import hashlib
 
-UPLOAD_FOLDER = '/home/traunio/Projektit/sahkonhinta/sahkonhinta/uploads'
+UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'csv'}
 
 app = Flask(__name__)
@@ -14,14 +14,15 @@ app.config['MAX_CONTENT_LENGTH'] = 2 * 1000 * 1000  # max upload size 2 MB
 
 @app.route('/')
 def main_page():
+    
     return render_template('index.html')
 
 
-@app.route('/consumption/<name>')
-def results_page(name):
+@app.route('/consumption/<name>/<float:marginal>')
+def results_page(name, marginal):
 
-    try: 
-        results = analysis.analyze(os.path.join(app.config['UPLOAD_FOLDER'], name))
+    try:
+        results = analysis.analyze(os.path.join(app.config['UPLOAD_FOLDER'], name), marginal)
         
     except:
         return f'<p>Jotain meni pieleen. Tiedosto oli {name}</p>'
@@ -29,7 +30,11 @@ def results_page(name):
 
     return render_template('success.html', outcome=results)
 
-    
+
+@app.route('/consumption/<name>')
+def results_const(name):
+    return results_page(name, 0.42)
+
 
 @app.route('/upload', methods=['POST'])
 def upload():
@@ -59,8 +64,15 @@ def upload():
         md5name = md5sum.hexdigest()
         os.rename(os.path.join(app.config['UPLOAD_FOLDER'], filename),
                   os.path.join(app.config['UPLOAD_FOLDER'], md5name))
-        
-        return redirect(url_for('results_page', name=md5name))
+
+
+        marginal = request.form.get('marginal')
+        if marginal:
+            marginal = float(marginal.replace(',', '.'))
+        else:
+            marginal = 0.42
+            
+        return redirect(url_for('results_page', name=md5name, marginal=marginal))
         
 
 

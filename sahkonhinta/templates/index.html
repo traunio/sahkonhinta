@@ -7,7 +7,7 @@
     <div class="row align-items-center g-lg-5 py-5">
       <div class="col-lg-7 text-center text-lg-start">
         <h1 class="display-4 fw-bold lh-1 mb-3">Pörssisähkö vs. kiinteä hinta</h1>
-        <p class="col-lg-10 fs-4">Kumpi olisi ollut halvempaa, pörssisähkö vai kiinteähintainen sopimus, kun tarkastellaan vuoden 2022 hintoja? Lataa oma sähkönkulutuksesi ja ota selvää. Oman sähkökulutuksesi saat haettua kätevästi Fingridin <a href="https://oma.datahub.fi">datahubista</a>. Lataa se sen jälkeen tälle sivustolle ja saat tulokset </p> 
+        <p class="col-lg-10 fs-4">Kumpi olisi ollut halvempaa, pörssisähkö vai kiinteähintainen sopimus, kun tarkastellaan vuoden 2022 hintoja? Lataa oma sähkönkulutuksesi ja ota selvää. Oman sähkökulutuksesi saat haettua kätevästi Fingridin <a href="https://oma.datahub.fi">datahubista</a>. Lataa se sen jälkeen tälle sivustolle ja saat tulokset</p> 
       </div>
       <div class="col-md-10 mx-auto col-lg-5">
         <form class="p-4 p-md-5 border rounded-3 bg-light" action="/upload" method="POST" enctype="multipart/form-data" action="/upload">
@@ -15,6 +15,11 @@
 	  <div class="mb-3">
 	    <label for="formFile" class="form-label">Sähkönkulutuksesi csv-muodossa</label>
 	    <input class="form-control" type="file" id="formFile" name="file">
+	  </div>
+	  <label for="marginal" class="form-label">Pörssisähkön maginaali</label>
+	  <div class="input-group mb-3">
+	    <input type="text" class="form-control text-end" placeholder="0,42" id="marginal">
+	    <span class="input-group-text">snt/kWh</span>
 	  </div>
           <button class="w-100 btn btn-lg btn-primary" type="submit">Lataa</button>
         </form>
@@ -27,7 +32,7 @@
 
 
 <h2>Miten tämä toimii</h2>
-<p>Palvelu sisältää vuoden 2022 sähköpörssin hintatiedot Suomen maa-alueella. Esimerkkilaskuissa käytetään Vattenfallin Tuntisähkö Mix -tuottetta ilman kk-maksuja, eli pörssisähkö + Vattenfallin marginaali. Kk-maksuja ei ole laskuissa huomioitu, vaan niiden on karkeasti oletettu olevan yhtä suuria pörssisähkössä ja kiinteän hinnassa.</p>
+<p>Palvelu sisältää sähköpörssin hintatiedot Suomen maa-alueella 1.2.2022 ja 15.10.2022 välisellä ajanjaksolla. Laskuissa ei ole huomioitu sähkösopimuksen siirtohintoja tai kk-maksuja. Eli käytännössä laskuissa on verollinen pörssisähkö + valittu marginaali. Kk-maksuja ei ole laskuissa huomioitu, vaan niiden on karkeasti oletettu olevan yhtä suuria pörssisähkössä ja kiinteän hinnassa.</p>
 
 
 <h2>Mitä tuloksia saan?</h2>
