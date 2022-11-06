@@ -32,28 +32,49 @@
 </div>
 
 
+{#
+<div class="container">
+  <h3 class="pb-3">Rajaa tarkastelujakso</h3>
+
+
+  <div class="mb-3">
+    <div class="row">
+      <div class="col">
+	<input type="text" class="form-control" placeholder="{{outcome.begin}}" aria-label="Ensimmäinen päivä">
+      </div>
+      <div class="col">
+	<input type="text" class="form-control" placeholder="{{outcome.end}}" aria-label="Last name">
+      </div>
+    </div>
+    
+    <div class="input-group mb-3">
+      <input type="text" class="form-control text-end" placeholder="0,42" id="marginal">
+      <span class="input-group-text">snt/kWh</span>
+    </div>
+
+  </div>
+
+</div>
+#}
+
+
+<div class="container">
+  <h3 class="pb-3 text-center">Kulutusprofiilit</h3>
+
+  <div class="row">
+    <div class="col mb-5">
+      <div id="usageHisto"></div>
+      <p>Päiväkohtainen kulutus vaihtelee. Yläpuolella näkyy kuinka usein on tullut erilaisia sähkömääriä kulutettua.</p>
+    </div>
+    
+    <div class="col mb-5">
+      <div id="profile"></div>
+      <p class="text-left"> Desiilit ilmoittavat kuinka moni jakauman arvoista on pienempi kuin annettu desiiili. Esim. 90 % desiilin alla on 90 % jakauman arvoista</p>
+    </div>
+  </div>
+</div>
+
 <script>
-
-  {#
-  var trace = {
-      x: {{outcome.usage}},
-      type: 'histogram'
-  };
-
-  var layout = {
-      title: 'Histogrammi päiväkohtaisesta sähkön käytöstä',
-      xaxis: {title: 'Sähköä käytetty kWh'},
-      yaxis: {title: 'Päivien lukumäärä [kpl]'},
-      height: 700
-
-  };
-
-   var data = [trace]; 
-
-  var config = {responsive: true}
-
-   Plotly.newPlot( 'dayUsage', data, layout); #}
-
 
   var wlayout = {
       title: 'Pörssisähkön keskimääräinen hinta omalla kulutuksella ',
@@ -100,21 +121,60 @@
 
   Plotly.newPlot('weeklyPrice', wdata, wlayout)
 
-  {#
-p
-  var ptrace = {
-      x: {{outcome.diffis}},
-      type: 'histogram'
+
+  var histdata = [{
+      type: 'bar',
+      x: {{outcome.Dvalues|safe}},
+      y: {{outcome.Dlabels|safe}},
+      orientation: 'h'     
+  }];
+
+  var histlayout =  {
+      title: 'Päiväkohtainen kulutus',
+      font: {size: '14'},
+      xaxis: {title: 'Päivien lukumäärä'},
+      yaxis: {title: 'Kulutus välillä (kWh)'},
+      height: 500,
   };
 
-  var playout = {
-      title: 'Histogrammi päiväkohtaisesta hintaerosta  pörssisähkön ja kiinteän välillä',
-      xaxis: {title: 'Pörssisähkö kalliimpi kuin kiinteä sähköä [euroa]'},
-      yaxis: {title: 'Päivien lukumäärä [kpl]'},
-      height: 700,
+  Plotly.newPlot('usageHisto', histdata, histlayout);
+
+  var pro_mtrace = {
+      x: {{outcome.profilex|safe}},
+      y: {{outcome.profileMean|safe}},
+      mode: 'lines',
+      name: 'Keskimääräinen',
   };
+
+  var pro_q1trace = {
+      x: {{outcome.profilex|safe}},
+      y: {{outcome.profileq1|safe}},
+      mode: 'lines',
+      name: '10 % desiili'
+  };
+
+  var pro_q3trace = {
+      x: {{outcome.profilex|safe}},
+      y: {{outcome.profileq3|safe}},
+      mode: 'lines',
+      name: '90 % desiili'
+  };
+
+  var pro_data = [pro_q3trace, pro_mtrace, pro_q1trace];
+
   
-  var pdata = [ptrace];
-   Plotly.newPlot('priceDiff', pdata, playout, config) #}
+  var pro_layout = {
+      title: 'Keskimääräinen tuntikulutus',
+      font: {size: '14'},
+      xaxis: {title: 'Alkava tasatunti',
+	      dtick: 2},
+      yaxis: {title: 'Kulutus (kWh)'},
+      height: 500,
+  };
+
+      
+  Plotly.newPlot('profile', pro_data, pro_layout)
+
+
 </script>
 {% endblock %}
