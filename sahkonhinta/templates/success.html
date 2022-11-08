@@ -5,7 +5,48 @@
 <script src="https://cdn.plot.ly/plotly-2.16.1.min.js"></script>
 
 <div class="container">
-  <h2 class="pb-3 mt-5 border-bottom">Sähkönkäyttösi {{outcome.begin}}-{{outcome.end}}</h1>
+
+  <div class="py-5 hstack gap-3">
+    <div>
+      <h2 class="border-bottom">Sähkönkäyttösi {{outcome.begin}}-{{outcome.end}}<h2>
+    </div>
+    <div class="ms-auto mt-auto border-bottom"><button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSelection" aria-expanded="false" aria-controls="collapseExample">
+    Muuta ajanjaksoa
+    </button></div>
+  </div>
+    
+
+  <div class="collapse col-md-7 col-lg-8" id="collapseSelection">
+    <div class="card card-body">
+      <h4>Ajanjakso</h4>
+      <form class="form-floating" method="get" action="">
+	<div class="row g-3">
+	  <div class="col-sm-6">
+	    <label for="firstDay">Aloitus</label>
+	    <input type="text" class="form-control" placeholder="{{outcome.begin}}" value="{{outcome.begin}}" aria-label="Ensimmäinen päivä" id="firstDay" name="first">
+	  </div>
+	  <div class="col-sm-6">
+	    <label for="lastDay">Lopetus</label>
+	    <input type="text" class="form-control" placeholder="{{outcome.end}}" value="{{outcome.end}}" aria-label="Last name" id="lastDay" name="last">
+	  </div>
+
+	  <div class="col-sm-6">	    
+	    <label for="marginal">Pörssisähkön marginaali</label>
+	    <div class="input-group">
+	    <input type="text" class="form-control text-end" placeholder="0,42" id="marginal" name="margin">
+	    <span class="input-group-text">snt/kWh</span>
+	    </div>
+	  </div>
+	  <div class="col-sm-4 mt-auto">
+	    <button type="submit" class="w-100 btn btn-primary btn-large">Vaihda</button>
+	  </div>
+	    
+	</div>
+      </form>
+    </div>
+  </div>
+</div>
+
 
 </div>
 <div class="container text-center">
@@ -27,35 +68,15 @@
 
 
 
+
+
 <div class="container">
   <div class="mb-4" id="weeklyPrice"></div>
 </div>
 
 
-{#
-<div class="container">
-  <h3 class="pb-3">Rajaa tarkastelujakso</h3>
 
 
-  <div class="mb-3">
-    <div class="row">
-      <div class="col">
-	<input type="text" class="form-control" placeholder="{{outcome.begin}}" aria-label="Ensimmäinen päivä">
-      </div>
-      <div class="col">
-	<input type="text" class="form-control" placeholder="{{outcome.end}}" aria-label="Last name">
-      </div>
-    </div>
-    
-    <div class="input-group mb-3">
-      <input type="text" class="form-control text-end" placeholder="0,42" id="marginal">
-      <span class="input-group-text">snt/kWh</span>
-    </div>
-
-  </div>
-
-</div>
-#}
 
 
 <div class="container">
