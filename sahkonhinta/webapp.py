@@ -43,9 +43,14 @@ def main_page():
     return render_template('index.html', first=first, last=last)
 
 
-@app.route('/consumption/<name>/<float:marginal>')
-def results_page(name, marginal):
+@app.route('/consumption/<name>')
+def results_page(name):
 
+
+    start = request.args.get('first', '')
+    end = request.args.get('last', '')
+    marginal_s = request.args.get('margin', '0.42')
+    
     try:
         conn = get_db()
         df_db = pd.read_sql('select * from elspot',
@@ -53,18 +58,17 @@ def results_page(name, marginal):
                             index_col='datetime',
                             parse_dates=['datetime'])
         
-        results = analysis.analyze(os.path.join(app.config['UPLOAD_FOLDER'], name), df_db, marginal)
+        results = analysis.analyze(os.path.join(app.config['UPLOAD_FOLDER'], name)
+                                   ,df_db
+                                   ,marginal_s
+                                   ,start
+                                   ,end)
         
     except:
         return f'<p>Jotain meni pieleen. Tiedosto oli {name}</p>'
 
 
     return render_template('success.html', outcome=results)
-
-
-@app.route('/consumption/<name>')
-def results_const(name):
-    return results_page(name, 0.42)
 
 
 @app.route('/upload', methods=['POST'])

@@ -2,8 +2,7 @@ import pandas as pd
 import json
 from pathlib import Path
 
-PRICES = Path('misc/prices.csv')
-
+MARGINAL = 0.42  # marginal if nothing provided
 
 def read_consumption(filename):
     """Transforms uploaded csv file to dataframe
@@ -28,17 +27,63 @@ def read_consumption(filename):
     return df
 
 
-def analyze(filename, df_db, marginal):
+def parse_marginal(marginal):
+    """Helper function to parse float string to marginal. Accepts comma and
+    full stop as decimal separator
+    :param marginal: marginal to parse
+    :returns: float marginal or MARGINAL if not possible 
+    """
+
+    try: 
+        result = float(marginal.replace(',', '.'))
+    except ValueError:
+        result = MARGINAL
+
+    return result
+
+
+def parse_date(date):
+    """Helper function to parse dates
+    :param date: Date given as string
+    :returns: date as pd.Datetime object or None
+    """
+
+    try:
+        temp = pd.to_datetime(date, dayfirst=True)
+        result = pd.Timestamp(temp, tz='Europe/Helsinki')
+    except ValueError:
+        result = None
+
+    return result
+
+
+
+def analyze(filename, df_db, marginal, start=None, end=None):
     """The main function of this file. Called by flask, and return a dict
     with the wanted answers
 
     :param filename: filename with path to the uploaded csv
     :param marginal: Marginal added snt/kWh for spot electricity
+    :param start: first date to use in user supplied data
+    :param end: last date to use in user supplied data
     :returns: all chart data and numerical results in a dict
     """
 
-    # marginaali myöhemmin
+    if isinstance(marginal, str):
+        marginal = parse_marginal(marginal)
+   
     consumption = read_consumption(filename)
+    delta = pd.Timedelta(23, 'H')
+
+    if start:
+        start = parse_date(start)
+        if len(consumption[start:]) > 1:        
+            consumption = consumption[start:]
+    if end:
+        end = parse_date(end) + delta
+        if len(consumption[:end]) > 1:               
+            consumption = consumption[:end]
+    
     prices = df_db
 
     res = prices.merge(consumption, left_index=True, right_index=True)
