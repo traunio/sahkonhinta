@@ -65,7 +65,7 @@ def results_page(name):
                                    ,end)
         
     except:
-        return f'<p>Jotain meni pieleen. Tiedosto oli {name}</p>'
+        return render_template('error.html')
 
 
     return render_template('success.html', outcome=results)
@@ -116,6 +116,9 @@ def upload():
         return redirect(url_for('results_page', name=md5name, marginal=marginal))
         
 
+@app.errorhandler(404)
+def some_error(error):
+    return render_template('404.html')
 
 def allowed_extension(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() == 'csv'

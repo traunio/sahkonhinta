@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{% block body %}
+
+
+<div class="px-4 pt-5 my-5 text-center border-bottom">
+    <h1 class="display-4 fw-bold">Hups, jotain meni pieleen</h1>
+    <div class="col-lg-6 mx-auto">
+      <p class="lead mb-4">Jotain meni pieleen ja se ei mahdollisesti ole sinun syytäsi. Tai jopa todennäköisesti se ei ole syytäsi, kun tämä sivusto on toisaalta purkkaviritelmä.</p>
+    </div>
+</div>
+
+<div class="container">
+  <p>Tässä listaa mahdollisista ongelmasyistä, jos yritit ladata sähkönkulutustasi:</p>
+  <ul>
+    <li> Tiedostopääte ei ollut .csv
+    <li> Csv-tiedoston koko oli yli 2 MB
+    <li> Csv-tiedostosta ei löytynyt sarakkeita "Alkuaika" ja "Määrä" (ilman lainausmerkkejä)
+    <li> Jotain muuta
+  </ul>
+
+  <p> Ehkä yritit suoraan ladata sivua jollain tekstijonolla ja sen takia meni pieleen? Jaa-a, mutta yritä uudelleen ja pidä sormet ristissä, että toimii tällä kertaa ;)</p>
+</div>
+{% endblock %}
