@@ -1,6 +1,6 @@
-import pandas as pd
 import json
-from pathlib import Path
+import pandas as pd
+
 
 MARGINAL = 0.42  # marginal if nothing provided
 
@@ -17,9 +17,9 @@ def read_consumption(filename):
 
         df = df['Määrä']
         df.name = 'consumed'
-    except:
+    except Exception as exc:
         print('Something went wrong. Too bad. Bad upload probably')
-        raise Exception('Something went wrong with reading csv')
+        raise Exception('Something went wrong with reading csv') from exc
 
     if len(df) == 0:
         raise Exception('Consumption csv is empty')
@@ -31,10 +31,10 @@ def parse_marginal(marginal):
     """Helper function to parse float string to marginal. Accepts comma and
     full stop as decimal separator
     :param marginal: marginal to parse
-    :returns: float marginal or MARGINAL if not possible 
+    :returns: float marginal or MARGINAL if not possible
     """
 
-    try: 
+    try:
         result = float(marginal.replace(',', '.'))
     except ValueError:
         result = MARGINAL
@@ -71,28 +71,28 @@ def analyze(filename, df_db, marginal, start=None, end=None):
 
     if isinstance(marginal, str):
         marginal = parse_marginal(marginal)
-   
+
     consumption = read_consumption(filename)
     delta = pd.Timedelta(23, 'H')
 
     if start:
         start = parse_date(start)
-        if len(consumption[start:]) > 1:        
+        if len(consumption[start:]) > 1:
             consumption = consumption[start:]
     if end:
         end = parse_date(end) + delta
-        if len(consumption[:end]) > 1:               
+        if len(consumption[:end]) > 1:
             consumption = consumption[:end]
-    
+
     prices = df_db
 
     res = prices.merge(consumption, left_index=True, right_index=True)
     res['costs'] = ((res.price+marginal) * res.consumed)/100  # euros
 
-    outcome = dict()
+    outcome = {}
 
     # keskimääräinen tuntihinta koko kulutukselle
-    outcome['const_price_s'] = f'{res.costs.sum() / res.consumed.sum():.2f}'
+    outcome['const_price_s'] = f'{res.costs.sum() / res.consumed.sum():.2f}'.replace('.', ',')
     outcome['const_price'] = res.costs.sum() / res.consumed.sum()
 
     outcome['begin'] = res.index[0].strftime('%d.%m.%Y')
@@ -101,9 +101,9 @@ def analyze(filename, df_db, marginal, start=None, end=None):
     outcome['last'] = res.index[-1].strftime('%Y-%m-%d')
 
     outcome['tot_power'] = res.consumed.sum()
-    outcome['tot_power_s'] = f'{outcome["tot_power"]:.2f}'
+    outcome['tot_power_s'] = f'{outcome["tot_power"]:.2f}'.replace('.', ',')
     outcome['tot_price'] = res.costs.sum()
-    outcome['tot_price_s'] = f'{outcome["tot_price"]:.2f}'
+    outcome['tot_price_s'] = f'{outcome["tot_price"]:.2f}'.replace('.', ',')
 
 
     # weeklyPrice kuvaajan data
@@ -134,18 +134,18 @@ def analyze(filename, df_db, marginal, start=None, end=None):
     outcome['Dvalues'] = ylabels
 
     # profile - Keskimääräinen päiväkulutus
-    def q1(x):
-        return x.quantile(0.1)
+    def quartile1(values):
+        return values.quantile(0.1)
 
-    def q3(x):
-        return x.quantile(0.9)
+    def quartile3(values):
+        return values.quantile(0.9)
 
-    aggs = ['mean', q1, q3]
+    aggs = ['mean', quartile1, quartile3]
 
     temp = res.consumed.groupby(res.index.hour).agg(aggs)
     outcome['profileMean'] = json.dumps(temp['mean'].values.tolist())
-    outcome['profileq1'] = json.dumps(temp['q1'].values.tolist())
-    outcome['profileq3'] = json.dumps(temp['q3'].values.tolist())
+    outcome['profileq1'] = json.dumps(temp['quartile1'].values.tolist())
+    outcome['profileq3'] = json.dumps(temp['quartile3'].values.tolist())
     outcome['profilex'] = json.dumps(temp.index.values.tolist())
 
     return outcome
