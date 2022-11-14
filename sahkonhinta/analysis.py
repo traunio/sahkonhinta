@@ -108,18 +108,18 @@ def analyze(filename, df_db, marginal, start=None, end=None):
 
     # weeklyPrice kuvaajan data
     temp = (res.costs.resample("W").sum() / res.consumed.resample("W").sum()) * 100
-    outcome['weekPrice'] = json.dumps(temp.values.tolist())
+    outcome['weekPrice'] = json.dumps([round(val, 1) for val in temp.values.tolist()])
     outcome['weekX'] = json.dumps(temp.index.strftime('%Y-%m-%d').tolist())
 
     # weeklyPrice - päivätaso
     temp = (res.costs.resample("D").sum() / res.consumed.resample("D").sum()) * 100
-    outcome['dayPrice'] = json.dumps(temp.values.tolist())
+    outcome['dayPrice'] = json.dumps([round(val, 1) for val in temp.values.tolist()])
     outcome['dayX'] = json.dumps(temp.index.strftime('%Y-%m-%d').tolist())
 
     # weeklyPrice kuukausitaso
     temp = (res.costs.resample("M", label="left", closed="left").sum() \
             / res.consumed.resample("M", label="left", closed="left").sum()) * 100
-    outcome['monthPrice'] = json.dumps(temp.values.tolist())
+    outcome['monthPrice'] = json.dumps([round(val,1) for val in temp.values.tolist()])
     outcome['monthX'] = json.dumps(temp.index.strftime('%Y-%m-%d').tolist())
 
     # usageHisto sähkönkulutuksen histogrammi
@@ -143,9 +143,9 @@ def analyze(filename, df_db, marginal, start=None, end=None):
     aggs = ['mean', quartile1, quartile3]
 
     temp = res.consumed.groupby(res.index.hour).agg(aggs)
-    outcome['profileMean'] = json.dumps(temp['mean'].values.tolist())
-    outcome['profileq1'] = json.dumps(temp['quartile1'].values.tolist())
-    outcome['profileq3'] = json.dumps(temp['quartile3'].values.tolist())
+    outcome['profileMean'] = json.dumps([round(val, 3) for val in temp['mean'].values.tolist()])
+    outcome['profileq1'] = json.dumps([round(val, 3) for val in temp['quartile1'].values.tolist()])
+    outcome['profileq3'] = json.dumps([round(val, 3) for val in temp['quartile3'].values.tolist()])
     outcome['profilex'] = json.dumps(temp.index.values.tolist())
 
     return outcome
