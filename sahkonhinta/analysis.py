@@ -4,6 +4,18 @@ import pandas as pd
 
 MARGINAL = 0.42  # marginal if nothing provided
 
+
+def quartile1(values):
+    """Helper function to calculate 10 % decile"""
+    return values.quantile(0.1)
+
+def quartile3(values):
+    """Helper function to calculate 10 % decile"""    
+    return values.quantile(0.9)
+
+AGGS = ['mean', quartile1, quartile3] 
+
+
 def read_consumption(filename):
     """Transforms uploaded csv file to dataframe
 
@@ -87,7 +99,7 @@ def analyze(filename, df_db, marginal, start=None, end=None):
     prices = df_db
 
     res = prices.merge(consumption, left_index=True, right_index=True)
-    res['costs'] = ((res.price+marginal) * res.consumed)/100  # euros
+    res['costs'] = ((res.price+marginal) * res.consumed)  # euros
 
     outcome = {}
 
@@ -102,23 +114,23 @@ def analyze(filename, df_db, marginal, start=None, end=None):
 
     outcome['tot_power'] = res.consumed.sum()
     outcome['tot_power_s'] = f'{outcome["tot_power"]:.2f}'.replace('.', ',')
-    outcome['tot_price'] = res.costs.sum()
+    outcome['tot_price'] = res.costs.sum() / 100
     outcome['tot_price_s'] = f'{outcome["tot_price"]:.2f}'.replace('.', ',')
 
 
     # weeklyPrice kuvaajan data
-    temp = (res.costs.resample("W").sum() / res.consumed.resample("W").sum()) * 100
+    temp = (res.costs.resample("W").sum() / res.consumed.resample("W").sum())
     outcome['weekPrice'] = json.dumps([round(val, 1) for val in temp.values.tolist()])
     outcome['weekX'] = json.dumps(temp.index.strftime('%Y-%m-%d').tolist())
 
     # weeklyPrice - päivätaso
-    temp = (res.costs.resample("D").sum() / res.consumed.resample("D").sum()) * 100
+    temp = (res.costs.resample("D").sum() / res.consumed.resample("D").sum())
     outcome['dayPrice'] = json.dumps([round(val, 1) for val in temp.values.tolist()])
     outcome['dayX'] = json.dumps(temp.index.strftime('%Y-%m-%d').tolist())
 
     # weeklyPrice kuukausitaso
     temp = (res.costs.resample("M", label="left", closed="left").sum() \
-            / res.consumed.resample("M", label="left", closed="left").sum()) * 100
+            / res.consumed.resample("M", label="left", closed="left").sum()) 
     outcome['monthPrice'] = json.dumps([round(val,1) for val in temp.values.tolist()])
     outcome['monthX'] = json.dumps(temp.index.strftime('%Y-%m-%d').tolist())
 
@@ -134,18 +146,54 @@ def analyze(filename, df_db, marginal, start=None, end=None):
     outcome['Dvalues'] = ylabels
 
     # profile - Keskimääräinen päiväkulutus
-    def quartile1(values):
-        return values.quantile(0.1)
+    
 
-    def quartile3(values):
-        return values.quantile(0.9)
-
-    aggs = ['mean', quartile1, quartile3]
-
-    temp = res.consumed.groupby(res.index.hour).agg(aggs)
+    temp = res.consumed.groupby(res.index.hour).agg(AGGS)
     outcome['profileMean'] = json.dumps([round(val, 3) for val in temp['mean'].values.tolist()])
     outcome['profileq1'] = json.dumps([round(val, 3) for val in temp['quartile1'].values.tolist()])
     outcome['profileq3'] = json.dumps([round(val, 3) for val in temp['quartile3'].values.tolist()])
     outcome['profilex'] = json.dumps(temp.index.values.tolist())
 
-    return outcome
+    out2 = create_spot_day_profile(res)
+    out2.update(create_spot_minus_own(res))
+
+    return outcome, out2
+
+
+def create_spot_day_profile(df):
+    """Helper function to create spot cost profile for each hour
+
+    :param df: Dataframe with consumed prices
+    :return : dict suitable to use in success.html template    
+    """
+
+    temp = df.price.groupby(df.index.hour).agg(AGGS)
+    results = {}
+    results['profileMean'] = json.dumps([round(val, 3) for val in temp['mean'].values.tolist()])
+    results['profileq1'] = json.dumps([round(val, 3) for val in temp['quartile1'].values.tolist()])
+    results['profileq3'] = json.dumps([round(val, 3) for val in temp['quartile3'].values.tolist()])
+    results['profilex'] = json.dumps(temp.index.values.tolist())
+
+    return results
+
+
+def create_spot_minus_own(df):
+    """Helper function to calculate chart data for avg spot price vs own spot price
+
+    :param df: Dataframe with price data and consumption
+    :return : dict suitable to use in success.html template    
+    """
+
+    week_price = (df.costs.resample("W").sum() / df.consumed.resample("W").sum())
+    day_price = (df.costs.resample("D").sum() / df.consumed.resample("D").sum()) 
+
+
+    temp = week_price - df.price.resample("W").mean()
+    
+    results = {}
+    results['diff_spotW'] = json.dumps([round(val, 2) for val in temp.values.tolist()])
+
+    temp = day_price - df.price.resample("D").mean()
+    results['diff_spotD'] = json.dumps([round(val, 2) for val in temp.values.tolist()])
+    
+    return results

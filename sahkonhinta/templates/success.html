@@ -67,20 +67,30 @@
 </div>
 
 
-
-
-
 <div class="container">
   <div class="mb-4" id="weeklyPrice"></div>
 </div>
 
 
+<div class="container">
+  <h3 class="pb-3 text-center">Pörssisähkön hintatiedot</h3>
 
-
+  <div class="row">
+    <div class="col mb-5">
+      <div id="spotProfile"></div>
+      <p>Desiilit ilmoittavat kuinka moni jakauman arvoista on pienempi kuin annettu desiiili. Esim. 90 % desiilin alla on 90 % jakauman arvoista</p>
+    </div>
+    
+    <div class="col mb-5">
+      <div id="costs_vs_spot"></div>
+      <p class="text-left"> Pörssisähkö on öisin halvempaa kuin päivällä. Kun oma sähkökulutus painottuu myös päiväsaikaan, on oman kulutuksen hinta suurempi kuin pörssisähkön keskimääräinen hinta. Kuvassa positiivinen arvo kertoo paljonko keskimääräinen sähkönhinta on ollut suurempi kuin keskimääräinen pörssisähkön hinta sähköä</p>
+    </div>
+  </div>
+</div>
 
 
 <div class="container">
-  <h3 class="pb-3 text-center">Kulutusprofiilit</h3>
+  <h3 class="pb-3 text-center">Oman kulutuksen tiedot</h3>
 
   <div class="row">
     <div class="col mb-5">
@@ -94,6 +104,8 @@
     </div>
   </div>
 </div>
+
+
 
 <script>
 
@@ -142,6 +154,36 @@
 
   Plotly.newPlot('weeklyPrice', wdata, wlayout)
 
+
+  var wee_spottrace = {
+      y: {{spot.diff_spotW}},
+      x: {{outcome.weekX|safe}},
+      line: {shape: 'hv'},
+      mode: 'lines',
+      type: 'scatter',
+      name: 'Viikkokohtainen',
+  };
+
+
+
+  var spot_layout = {
+      title: 'Hintaero omalla kulutuksella ja pörssisähköllä viikkotasolla',
+      xaxis: {
+	  title: 'Ajankohta',
+	  autorange: true,
+	  rangeslider: {range: ['{{outcome.first}}', '{{outcome.last}}']},
+	  type: 'date'
+      },
+      yaxis: {title: 'Hintaero (snt/kWh)'},
+  };
+
+
+  var spot_data = [wee_spottrace];
+
+
+  Plotly.newPlot('costs_vs_spot', spot_data, spot_layout)
+
+  
 
   var histdata = [{
       type: 'bar',
@@ -196,6 +238,41 @@
       
   Plotly.newPlot('profile', pro_data, pro_layout)
 
+    var spotpro_mtrace = {
+      x: {{spot.profilex|safe}},
+      y: {{spot.profileMean|safe}},
+      mode: 'lines',
+      name: 'Keskimääräinen',
+  };
+
+  var spotpro_q1trace = {
+      x: {{spot.profilex|safe}},
+      y: {{spot.profileq1|safe}},
+      mode: 'lines',
+      name: '10 % desiili'
+  };
+
+  var spotpro_q3trace = {
+      x: {{spot.profilex|safe}},
+      y: {{spot.profileq3|safe}},
+      mode: 'lines',
+      name: '90 % desiili'
+  };
+
+  var spotpro_data = [spotpro_q3trace, spotpro_mtrace, spotpro_q1trace];
+
+  
+  var spotpro_layout = {
+      title: 'Keskimääräinen pörssisähkön tuntihinta',
+      font: {size: '14'},
+      xaxis: {title: 'Alkava tasatunti',
+	      dtick: 2},
+      yaxis: {title: 'Hinta (snt/kWh)'},
+      height: 500,
+  };
+
+
+  Plotly.newPlot('spotProfile', spotpro_data, spotpro_layout)
 
 </script>
 {% endblock %}

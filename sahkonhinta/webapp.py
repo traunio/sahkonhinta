@@ -40,11 +40,12 @@ def results_page(name):  # pylint: disable=C0116
                             index_col='datetime',
                             parse_dates=['datetime'])
 
-        results = analysis.analyze(os.path.join(current_app.config['UPLOAD_FOLDER'], name)
-                                   ,df_db
-                                   ,marginal_s
-                                   ,start
-                                   ,end)
+        results, spot_profile = analysis.analyze(os.path.join(current_app.config['UPLOAD_FOLDER'],
+                                                              name)
+                                                 ,df_db
+                                                 ,marginal_s
+                                                 ,start
+                                                 ,end)
 
     except Exception:  # pylint: disable=W0703
         return render_template('error.html')
@@ -52,6 +53,7 @@ def results_page(name):  # pylint: disable=C0116
 
     return render_template('success.html',
                            outcome=results,
+                           spot=spot_profile,
                            marginal_s=marginal_s.replace('.', ','))
 
 

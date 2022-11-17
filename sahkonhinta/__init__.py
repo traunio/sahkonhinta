@@ -23,7 +23,6 @@ def create_app(test_config=None):
         os.makedirs(app.root_path)
     except OSError:
         pass
-
     
     app.register_blueprint(webapp.bp)
     
