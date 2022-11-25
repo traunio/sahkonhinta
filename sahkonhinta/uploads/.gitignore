@@ -1,5 +1,9 @@
 # Ignore all
 *
 
+
 # Do not ignore .gitignore
 !.gitignore
+# Do not ignore example results
+!./example_results
+
