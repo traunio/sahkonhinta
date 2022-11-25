@@ -92,13 +92,13 @@ def upload():  # pylint: disable=C0116, R1710
         os.rename(full_path,
                   os.path.join(current_app.config['UPLOAD_FOLDER'], md5name))
 
-        marginal = request.form.get('marginal')
+        marginal = request.form.get('margin')
         if marginal:
             marginal = float(marginal.replace(',', '.'))
         else:
             marginal = 0.42
 
-        return redirect(url_for('webapp.results_page', name=md5name, marginal=marginal))
+        return redirect(url_for('webapp.results_page', name=md5name, margin=marginal))
 
 
 @bp.errorhandler(404)
