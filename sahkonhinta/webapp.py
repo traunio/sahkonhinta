@@ -2,7 +2,7 @@ import os
 import hashlib
 from datetime import datetime
 import pandas as pd
-from flask import request, redirect, url_for, render_template, Blueprint, current_app
+from flask import request, redirect, url_for, render_template, Blueprint, current_app, flash
 from werkzeug.utils import secure_filename
 from sahkonhinta.db import get_db
 from . import analysis
@@ -53,6 +53,7 @@ def results_page(name):  # pylint: disable=C0116
 
     return render_template('success.html',
                            outcome=results,
+                           name=name,
                            spot=spot_profile,
                            marginal_s=marginal_s.replace('.', ','))
 
@@ -99,6 +100,22 @@ def upload():  # pylint: disable=C0116, R1710
             marginal = 0.42
 
         return redirect(url_for('webapp.results_page', name=md5name, margin=marginal))
+
+@bp.route('/delete/<name>')
+def delete_user_data(name):
+
+    if all(chr in '0123456789abcdef' for chr in name):
+
+        filename = os.path.join(current_app.config['UPLOAD_FOLDER'], name)
+
+        if os.path.isfile(filename):
+
+            os.remove(filename)
+            flash(f"Tulokset '{name}' poistettu onnistuneesti")
+            return redirect(url_for('webapp.main_page'))
+
+    flash(f"Tuloksia ei löytynyt.")
+    return redirect(url_for('webapp.main_page'))
 
 
 @bp.errorhandler(404)

@@ -106,7 +106,23 @@
 </div>
 
 
-
+<div class="container">
+  <h3 class="pb-3 text-center">Omien tietojen poisto</h3>
+  <p>Painamalla oheisesta napista saat poistettua omat tietosi tältä palvelimelta. Tällöin tulossivun lataaminen edellyttää omien kulutustietojen lataamista uudestaan palevelimelle. Jos et poista tietojasi, toimii tämän sivun osoite, kunnes joku poistaa tiedot. Palveluun jäävä tieto sisältää ainoastaan sähkönkulutuksen tunneittain. Esimerkkinä palvelusta jääväst tiedosta:</p>
+  <div class="bg-light">
+  <code>
+    Alkuaika;Määrä<br>
+    2022-07-25T00:00:00Z;0.19<br>
+    2022-07-25T01:00:00Z;0.25<br>
+    2022-07-25T02:00:00Z;0.12<br>
+    2022-07-25T03:00:00Z;0.24<br>
+    2022-07-25T04:00:00Z;0.21<br>
+  </code>
+  </div>
+  <form method="GET" action="/delete/{{name}}">
+    <button class="w-100 btn btn-lg btn-primary" type="submit">Poista tulossivu</button>
+    </form>
+</div>
 <script>
 
   var wlayout = {

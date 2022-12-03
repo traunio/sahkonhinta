@@ -48,11 +48,28 @@
 
 <h2>Mitä minusta tallennetaan?</h2>
 
-<p>Tällä hetkellä lataamasi kulutustiedot jäävät talteen. Kulutustiedoista jää tällä hetkellä talteen tunneittainen kulutusmäärä, mutta ei muita mittauspisteen paikkaa tai vastaavaa. Tähän on kaksi syytä:</p>
+<p>Lataamasi kulutusiedot jäävät talteen, ellet poista niitä erikseen tulossivulta. Tähän on kaksi syytä:</p>
 <ul>
   <li>Omat tulokset voi jakaa linkkinä ja omat tulokset saa näkyville ilman tietojen lataamista uudelleen
-  <li>Palveluun ladatuista kulutustiedoista on tarkoitus tehdä vertailutuloksia. Esim. miten vertautuu keskimääräiseen käyttäjään (tämä ominaisuus tulee joskus)
+  <li>Palveluun ladatuista kulutustiedoista voi tulevaisuudessa tehdä vertailutuloksia. Esim. miten oma kulutus vertautuu keskimääräiseen käyttäjään
 </ul>
+
+<p>Palvelimelle jäävästä ladastuista kulutustiedoista jää talteen ainoastaan tunneittainen kulutusmäärä. Tämä on mahdollista estää poistamalla omat tiedot kulutussivuilla. Tässä esimerkki palvelimelle tallennettavasta datasta:</p>
+<div class="bg-light">
+  <code>
+    Alkuaika;Määrä<br>
+    2022-07-25T00:00:00Z;0.19<br>
+    2022-07-25T01:00:00Z;0.25<br>
+    2022-07-25T02:00:00Z;0.12<br>
+    2022-07-25T03:00:00Z;0.24<br>
+    2022-07-25T04:00:00Z;0.21<br>
+    2022-07-25T05:00:00Z;0.55<br>
+    2022-07-25T06:00:00Z;0.95<br>
+    2022-07-25T07:00:00Z;0.47<br>
+    ...
+  </code>
+</div>
+
 
 </div>
 {% endblock %}
