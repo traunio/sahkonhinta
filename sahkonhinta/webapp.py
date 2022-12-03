@@ -48,6 +48,7 @@ def results_page(name):  # pylint: disable=C0116
                                                  ,end)
 
     except Exception:  # pylint: disable=W0703
+        flash("Ongelma ladattujen tietojen ja sähköpörssin hintojen vertailussa")
         return render_template('error.html')
 
 
@@ -63,7 +64,8 @@ def upload():  # pylint: disable=C0116, R1710
 
     # check if the post request has the file part
     if 'file' not in request.files:
-        print(f"request.files={request.files}\nrequesst={request}")
+        flash("Sivupyyntö ei sisältänyt tiedostoa")
+        return redirect(url_for('webapp.main_page'))
         return redirect(request.url)
 
     file = request.files['file']
@@ -71,6 +73,7 @@ def upload():  # pylint: disable=C0116, R1710
         # empty file without a filename.
     if file.filename == '':
 
+        flash("Tedostoa ei saatu")
         return redirect(url_for('webapp.main_page'))
 
     if file and allowed_extension(file.filename):
@@ -82,7 +85,9 @@ def upload():  # pylint: disable=C0116, R1710
             df = pd.read_csv(full_path, sep=';', decimal=',', usecols=['Alkuaika','Määrä'])
             df.to_csv(full_path, sep=';', index=False)
         except:  # pylint: disable=W0702
-            print('Dataframen lukemisessa häikkää')
+            flash("Jotain meni pieleen ladatun csv-tiedoston käsitelyssä. Löytyyhän siitä 'Alkuaika' ja 'Määrä' kolumnit?")
+            os.remove(full_path)
+            return redirect(url_for('webapp.main_page'))
 
         md5sum = hashlib.md5()
         with open(full_path, 'rb') as f:
@@ -101,6 +106,10 @@ def upload():  # pylint: disable=C0116, R1710
 
         return redirect(url_for('webapp.results_page', name=md5name, margin=marginal))
 
+    else:
+        flash("Jotain meni pieleen. Oliko tiedoston pääte muu kuin '.csv'?")
+        return redirect(url_for('webapp.main_page'))
+    
 @bp.route('/delete/<name>')
 def delete_user_data(name):
 
