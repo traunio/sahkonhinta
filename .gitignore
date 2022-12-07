@@ -11,3 +11,5 @@ venv/
 # pycache
 __pycache__/
 
+# Production config containing SECRET_KEY
+production.cfg
