@@ -1,4 +1,4 @@
-"""Database related functions for fetching ENTSOE price data
+"""Database related functions for fetching ENTSOE price data.
 """
 
 import sqlite3
@@ -18,12 +18,26 @@ def get_db():
 
     return g.db
 
-def refresh_elspot_db(start, end, if_exists='append'):
+def get_elspot():
+    """Function return elspot price data as a datarame
+    :returns: pandas dataframe with all elspot data
+    """
+
+    with get_db() as conn:
+        df_db = pd.read_sql('select * from elspot',
+                            conn,
+                            index_col='datetime',
+                            parse_dates=['datetime'])
+
+    return df_db
+
+def refresh_elspot_db(start, end, conn, if_exists='append'):
     """Function to add new price data to elspot database. VAT/ALV is added to
     price date from ENTSOE. In Finland it is 10% between 20221201 and 20230430,
     otherwise 24%.
     :param start: the start pandas Timestamp
     :param end: the end pandas Timestamp. Note also clock time should be included
+    :param conn: connection to database
     :param if_exists: what to do with database addition
     """
 
@@ -41,13 +55,45 @@ def refresh_elspot_db(start, end, if_exists='append'):
     df.loc[~selector, 'price'] = df[~selector].price * 1.24 / 10
     df.price = df.price.apply(lambda x: round(x,3))
 
-    conn = get_db()
-
     if df.to_sql('elspot', conn, if_exists=if_exists, index=False):
         conn.commit()
         return True
 
     return None
+
+
+def get_db_dates():
+    """Function used by main_page view. Returns first and last day of database
+    and updates the database, if there are newer price data available
+    :return: Tuple of (first, last) strings of db dates"""
+
+    with get_db() as conn:
+
+        cursor = conn.cursor()
+        cursor.execute('SELECT min(datetime), max(datetime) FROM elspot')
+        res = cursor.fetchone()
+
+        first = pd.Timestamp(res[0], tz='Europe/Helsinki')
+        last = pd.Timestamp(res[1], tz='Europe/Helsinki')
+
+
+        first_missing = last + pd.Timedelta(1, 'h')
+        today_last = pd.Timestamp.today(tz='Europe/Helsinki').replace(
+            hour=23, minute=59, second=0)
+
+        if today_last - first_missing > pd.Timedelta(18, "h"):
+            refresh_elspot_db(first_missing, today_last, conn)
+            cursor.execute('SELECT min(datetime), max(datetime) FROM elspot')
+            res = cursor.fetchone()
+
+            first = pd.Timestamp(res[0], tz='Europe/Helsinki')
+            last = pd.Timestamp(res[1], tz='Europe/Helsinki')
+
+
+    first = first.strftime('%d.%m.%Y')
+    last = last.strftime('%d.%m.%Y')
+
+    return first, last
 
 
 def first_missing_time():
@@ -58,7 +104,7 @@ def first_missing_time():
     conn = get_db()
     cursor = conn.cursor()
 
-    cursor.execute('SELECT datetime from elspot order by datetime desc limit 1')
+    cursor.execute('SELECT max(datetime) FROM elspot')
     try:
         latest = cursor.fetchone()[0]
     except IndexError:
@@ -80,7 +126,8 @@ def init_db():
     end = pd.Timestamp(pd.Timestamp.today(tz='Europe/Helsinki').date(),
                        tz='Europe/Helsinki') + pd.Timedelta('23:59:00')
 
-    return refresh_elspot_db(start, end, 'replace')
+    conn = get_db()
+    return refresh_elspot_db(start, end, conn, 'replace')
 
 
 

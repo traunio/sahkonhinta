@@ -1,10 +1,9 @@
 import os
 import hashlib
-from datetime import datetime
 import pandas as pd
 from flask import request, redirect, url_for, render_template, Blueprint, current_app, flash
 from werkzeug.utils import secure_filename
-from sahkonhinta.db import get_db
+from sahkonhinta.db import get_db_dates, get_elspot
 from . import analysis
 
 
@@ -14,13 +13,7 @@ bp = Blueprint('webapp', __name__)
 @bp.route('/')
 def main_page():  # pylint: disable=C0116
 
-    conn = get_db()
-
-    cursor = conn.cursor()
-    cursor.execute('SELECT min(datetime), max(datetime) FROM elspot')
-    res = cursor.fetchone()
-    first = datetime.strptime(res[0][:10], '%Y-%m-%d').strftime('%d.%m.%Y')
-    last = datetime.strptime(res[1][:10], '%Y-%m-%d').strftime('%d.%m.%Y')
+    first, last = get_db_dates()
 
     return render_template('index.html', first=first, last=last)
 
@@ -34,12 +27,7 @@ def results_page(name):  # pylint: disable=C0116
     marginal_s = request.args.get('margin', '0.42')
 
     try:
-        conn = get_db()
-        df_db = pd.read_sql('select * from elspot',
-                            conn,
-                            index_col='datetime',
-                            parse_dates=['datetime'])
-
+        df_db = get_elspot()
         results, spot_profile = analysis.analyze(os.path.join(current_app.config['UPLOAD_FOLDER'],
                                                               name)
                                                  ,df_db
@@ -66,7 +54,6 @@ def upload():  # pylint: disable=C0116, R1710
     if 'file' not in request.files:
         flash("Sivupyyntö ei sisältänyt tiedostoa")
         return redirect(url_for('webapp.main_page'))
-        return redirect(request.url)
 
     file = request.files['file']
         # If the user does not select a file, the browser submits an
@@ -85,7 +72,8 @@ def upload():  # pylint: disable=C0116, R1710
             df = pd.read_csv(full_path, sep=';', decimal=',', usecols=['Alkuaika','Määrä'])
             df.to_csv(full_path, sep=';', index=False)
         except:  # pylint: disable=W0702
-            flash("Jotain meni pieleen ladatun csv-tiedoston käsitelyssä. Löytyyhän siitä 'Alkuaika' ja 'Määrä' kolumnit?")
+            flash("Jotain meni pieleen ladatun csv-tiedoston käsitelyssä."
+                  " Löytyyhän siitä 'Alkuaika' ja 'Määrä' kolumnit?")
             os.remove(full_path)
             return redirect(url_for('webapp.main_page'))
 
@@ -106,12 +94,11 @@ def upload():  # pylint: disable=C0116, R1710
 
         return redirect(url_for('webapp.results_page', name=md5name, margin=marginal))
 
-    else:
-        flash("Jotain meni pieleen. Oliko tiedoston pääte muu kuin '.csv'?")
-        return redirect(url_for('webapp.main_page'))
-    
+    flash("Jotain meni pieleen. Oliko tiedoston pääte muu kuin '.csv'?")
+    return redirect(url_for('webapp.main_page'))
+
 @bp.route('/delete/<name>')
-def delete_user_data(name):
+def delete_user_data(name):  # pylint: disable=C0116
 
     if all(chr in '0123456789abcdef' for chr in name):
 
@@ -123,7 +110,7 @@ def delete_user_data(name):
             flash(f"Tulokset '{name}' poistettu onnistuneesti")
             return redirect(url_for('webapp.main_page'))
 
-    flash(f"Tuloksia ei löytynyt.")
+    flash("Tuloksia ei löytynyt.")
     return redirect(url_for('webapp.main_page'))
 
 
