@@ -1,6 +1,6 @@
 jupyterlab
 pandas
-openpyxl
 flask
 entsoe
+gunicorn
 
