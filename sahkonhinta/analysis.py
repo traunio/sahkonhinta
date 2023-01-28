@@ -99,7 +99,7 @@ def analyze(filename, df_db, marginal, start=None, end=None):
     prices = df_db
 
     res = prices.merge(consumption, left_index=True, right_index=True)
-    res['costs'] = ((res.price+marginal) * res.consumed)  # euros
+    res['costs'] = ((res.price+marginal) * res.consumed)
 
     outcome = {}
 
@@ -147,7 +147,6 @@ def analyze(filename, df_db, marginal, start=None, end=None):
 
     # profile - Keskimääräinen päiväkulutus
     
-
     temp = res.consumed.groupby(res.index.hour).agg(AGGS)
     outcome['profileMean'] = json.dumps([round(val, 3) for val in temp['mean'].values.tolist()])
     outcome['profileq1'] = json.dumps([round(val, 3) for val in temp['quartile1'].values.tolist()])

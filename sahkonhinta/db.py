@@ -36,7 +36,7 @@ def get_elspot():
 def refresh_elspot_db(start, end, conn, if_exists='append'):
     """Function to add new price data to elspot database. VAT/ALV is added to
     price date from ENTSOE. In Finland it is 10% between 20221201 and 20230430,
-    otherwise 24%.
+    otherwise 24%. Price data is also converted to snt/kWh from €/MWh
     :param start: the start pandas Timestamp
     :param end: the end pandas Timestamp. Note also clock time should be included
     :param conn: connection to database
@@ -111,8 +111,8 @@ def remove_old_files():
 
     cutoff = pd.Timestamp.now() - pd.Timedelta(7, "d")
 
-    # Note pd.Timestamp will in CET time, but without tz info
-    # So the exact difference will be in GMT.
+    # Note pd.Timestamp constructed from name.stat().st_mtime will be in GMT time
+    # So the exact difference might be 7 days minus couple hours
     to_remove = list(name for name in files
                      if pd.Timestamp(name.stat().st_mtime, unit='s') < cutoff)
 
