@@ -2,4 +2,5 @@ jupyterlab
 pandas
 openpyxl
 flask
-matplotlib
+entsoe
+
