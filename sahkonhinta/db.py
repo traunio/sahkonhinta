@@ -2,9 +2,11 @@
 """
 
 import sqlite3
+from pathlib import Path
 import pandas as pd
 from entsoe import EntsoePandasClient
 from flask import current_app, g
+
 
 START = '20210901'   # the first day of ELSPOT that we are interested in
 VAT_START = '20221201 00:00:00'  # the first day of 10% VAT
@@ -88,12 +90,36 @@ def get_db_dates():
 
             first = pd.Timestamp(res[0], tz='Europe/Helsinki')
             last = pd.Timestamp(res[1], tz='Europe/Helsinki')
+            remove_old_files()
 
 
     first = first.strftime('%d.%m.%Y')
     last = last.strftime('%d.%m.%Y')
 
     return first, last
+
+
+def remove_old_files():
+    """Helper function to remove old consumption files saved in uploads.
+    Removes things that are older than a week.
+    """
+
+    upload_path = Path(current_app.config['UPLOAD_FOLDER'])
+    files = list(x for x in upload_path.glob('*') if '.' not in x.name
+                 and x.name!='example_results')
+
+
+    cutoff = pd.Timestamp.now() - pd.Timedelta(7, "d")
+
+    # Note pd.Timestamp will in CET time, but without tz info
+    # So the exact difference will be in GMT.
+    to_remove = list(name for name in files
+                     if pd.Timestamp(name.stat().st_mtime, unit='s') < cutoff)
+
+
+    # Removing files
+    for name in to_remove:
+        name.unlink()
 
 
 def first_missing_time():
