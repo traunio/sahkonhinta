@@ -107,6 +107,11 @@
 
 
 <div class="container">
+  <h3 class="pb-3 text-center"><a href="/">Palaa etusivulle</a></h3>
+
+</div>
+
+<div class="container">
   <h3 class="pb-3 text-center">Omien tietojen poisto</h3>
   <p>Painamalla oheisesta napista saat poistettua omat tietosi tältä palvelimelta. Tällöin tulossivun lataaminen edellyttää omien kulutustietojen lataamista uudestaan tälle netisivulle. Jos tietoja ei poisteta manuaalisesta, poistetaan ne automaatisesti noin viikon jälkeen. Palveluun jäävä tieto sisältää ainoastaan sähkönkulutuksen tunneittain. Esimerkkinä palvelusta jäävästä tiedosta:</p>
   <div class="bg-light">
@@ -134,8 +139,15 @@
 	  rangeslider: {range: ['{{outcome.first}}', '{{outcome.last}}']},
 	  type: 'date'
       },
+      legend: {
+	  x: 0,
+	  y: 1.08,
+	  achor: 'left',
+	  orientation: 'h'
+      },
       yaxis: {title: 'Sähkön hinta [snt/kWh]'},
       height: 700,
+      autosize: true,
   };
 
   var dtrace = {
@@ -191,6 +203,8 @@
 	  type: 'date'
       },
       yaxis: {title: 'Hintaero (snt/kWh)'},
+      width: 550,
+      autosize: true,
   };
 
 
@@ -214,6 +228,8 @@
       xaxis: {title: 'Päivien lukumäärä'},
       yaxis: {title: 'Kulutus välillä (kWh)'},
       height: 500,
+      width: 550,
+      autosize: true,
   };
 
   Plotly.newPlot('usageHisto', histdata, histlayout);
@@ -248,7 +264,15 @@
       xaxis: {title: 'Alkava tasatunti',
 	      dtick: 2},
       yaxis: {title: 'Kulutus (kWh)'},
-      height: 500,
+      legend: {
+	  x: 0,
+	  y: 1.08,
+	  achor: 'right',
+	  orientation: 'h'
+      },
+      height: 450,
+      width: 550,      
+      autosize: true,
   };
 
       
@@ -284,7 +308,15 @@
       xaxis: {title: 'Alkava tasatunti',
 	      dtick: 2},
       yaxis: {title: 'Hinta (snt/kWh)'},
+      legend: {
+	  x: 0,
+	  y: 1.08,
+	  achor: 'left',
+	  orientation: 'h'
+      },
       height: 500,
+      width: 600,
+      autosize: true,
   };
 
 

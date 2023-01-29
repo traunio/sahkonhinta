@@ -7,18 +7,18 @@
     <div class="row align-items-center g-lg-5 py-5">
       <div class="col-lg-7 text-center text-lg-start">
         <h1 class="display-4 fw-bold lh-1 mb-3">Pörssisähkö vs. kiinteä hinta</h1>
-        <p class="col-lg-10 fs-4">Kumpi olisi ollut halvempaa, pörssisähkö vai kiinteähintainen sopimus, kun tarkastellaan esim. vuoden 2022 hintoja? Lataa oma sähkönkulutuksesi ja ota selvää. Oman sähkökulutuksesi saat haettua kätevästi Fingridin <a href="https://oma.datahub.fi">datahubista</a>. Lataa se sen jälkeen tälle sivustolle ja saat tulokset <a href="consumption/example_results">(katso esimerkkitulokset)</a></p> 
+        <p class="col-lg-10 fs-4">Kumpi olisi ollut halvempaa, pörssisähkö vai kiinteähintainen sopimus, kun tarkastellaan toteutunutta sähkökulutusta? Lataa oma sähkönkulutuksesi ja ota selvää. Oman sähkökulutuksesi saat haettua kätevästi Fingridin <a href="https://oma.datahub.fi">datahubista</a>. Lataa se sen jälkeen tälle sivustolle ja saat tulokset <a href="consumption/example_results">(katso esimerkkitulokset)</a></p> 
       </div>
       <div class="col-md-10 mx-auto col-lg-5">
         <form class="p-4 p-md-5 border rounded-3 bg-light" method="POST" enctype="multipart/form-data" action="/upload">
 
 	  <div class="mb-3">
-	    <label for="formFile" class="form-label">Sähkönkulutuksesi csv-muodossa</label>
+	    <label for="formFile" class="form-label">Sähkönkulutuksesi (Fingridiltä)</label>
 	    <input class="form-control" type="file" id="formFile" name="file">
 	  </div>
 	  <label for="marginal" class="form-label">Pörssisähkön maginaali</label>
 	  <div class="input-group mb-3">
-	    <input type="text" class="form-control text-end" placeholder="0,42" id="marginal" name="margin">
+	    <input type="text" class="form-control text-end" placeholder="0,40" id="marginal" name="margin">
 	    <span class="input-group-text">snt/kWh</span>
 	  </div>
           <button class="w-100 btn btn-lg btn-primary" type="Button">Lataa</button>
@@ -36,7 +36,7 @@
 
 <h2>Mitä tuloksia saan?</h2>
 
-<p>Hienoja tuloksia. Saat tietää:</p>
+<p>Saat tietää:</p>
 <ul>
   <li>Kokonaiskulutukseksi lataamallasi ajanjaksolla, ja kulutusprofiilisi
   <li>Sähkönhintasi pörssisähköllä ja miten se suhtautuu keskimääräiseen pörssisähkön hintaan
@@ -47,13 +47,8 @@
 
 <h2>Mitä minusta tallennetaan?</h2>
 
-<p>Lataamasi kulutusiedot jäävät talteen, ellet poista niitä erikseen tulossivulta. Tähän on kaksi syytä:</p>
-<ul>
-  <li>Omat tulokset voi jakaa linkkinä ja omat tulokset saa näkyville ilman tietojen lataamista uudelleen
-  <li>Palveluun ladatuista kulutustiedoista voi tulevaisuudessa tehdä vertailutuloksia. Esim. miten oma kulutus vertautuu keskimääräiseen käyttäjään
-</ul>
-
-<p>Palvelimelle jäävästä ladastuista kulutustiedoista jää talteen ainoastaan tunneittainen kulutusmäärä. Tämä on mahdollista estää poistamalla omat tiedot kulutussivuilla. Tässä esimerkki palvelimelle tallennettavasta datasta:</p>
+<p>Lataamasi kulutusiedot jäävät talteen noin viikoksi, mutta ne voi myös poistaa samantien tulossivulta. Tiedot jäävät oletusarvoisesti noin viikoksi talteen, jotta omat tulokset ovat saatavilla hetken ilman tietojen lataamista uudelleen palveluun.</p>
+<p>Palvelimelle ladatusta kulutustiedoista otetaan talteen ainoastaan tunneittainen kulutusmäärä. Tässä esimerkki palvelimelle tallennettavasta datasta:</p>
 <div class="bg-light">
   <code>
     Alkuaika;Määrä<br>
