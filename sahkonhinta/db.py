@@ -30,6 +30,7 @@ def get_elspot():
                             conn,
                             index_col='datetime',
                             parse_dates=['datetime'])
+        df_db.index = df_db.index.tz_localize('UTC').tz_convert('Europe/Helsinki')
 
     return df_db
 
@@ -56,6 +57,7 @@ def refresh_elspot_db(start, end, conn, if_exists='append'):
     df.loc[selector, 'price'] = df[selector].price * 1.1 / 10
     df.loc[~selector, 'price'] = df[~selector].price * 1.24 / 10
     df.price = df.price.apply(lambda x: round(x,3))
+    df['datetime'] = df.datetime.apply(lambda x: x.timestamp())
 
     if df.to_sql('elspot', conn, if_exists=if_exists, index=False):
         conn.commit()
@@ -75,8 +77,8 @@ def get_db_dates():
         cursor.execute('SELECT min(datetime), max(datetime) FROM elspot')
         res = cursor.fetchone()
 
-        first = pd.Timestamp(res[0], tz='Europe/Helsinki')
-        last = pd.Timestamp(res[1], tz='Europe/Helsinki')
+        first = pd.Timestamp(res[0], tz='Europe/Helsinki', unit='s')
+        last = pd.Timestamp(res[1], tz='Europe/Helsinki', unit='s')
 
 
         first_missing = last + pd.Timedelta(1, 'h')
@@ -136,8 +138,8 @@ def first_missing_time():
     except IndexError:
         return None
 
-    date = pd.Timestamp(latest[0]) + pd.Timedelta('01:00:00')
-    date = date.tz_convert('Europe/Helsinki')
+    date = pd.Timestamp(latest, tz='Europe/Helsinki', unit='s') + pd.Timedelta('01:00:00')
+
     conn.close()
 
     return date
