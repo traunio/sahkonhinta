@@ -90,7 +90,7 @@ def upload():  # pylint: disable=C0116, R1710
         if marginal:
             marginal = float(marginal.replace(',', '.'))
         else:
-            marginal = 0.42
+            marginal = 0.4
 
         return redirect(url_for('webapp.results_page', name=md5name, margin=marginal))
 
