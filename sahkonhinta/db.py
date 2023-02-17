@@ -90,8 +90,8 @@ def get_db_dates():
             cursor.execute('SELECT min(datetime), max(datetime) FROM elspot')
             res = cursor.fetchone()
 
-            first = pd.Timestamp(res[0], tz='Europe/Helsinki')
-            last = pd.Timestamp(res[1], tz='Europe/Helsinki')
+            first = pd.Timestamp(res[0], tz='Europe/Helsinki', unit='s')
+            last = pd.Timestamp(res[1], tz='Europe/Helsinki', unit='s')
             remove_old_files()
 
 
