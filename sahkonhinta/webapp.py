@@ -24,7 +24,7 @@ def results_page(name):  # pylint: disable=C0116
 
     start = request.args.get('first', '')
     end = request.args.get('last', '')
-    marginal_s = request.args.get('margin', '0.42')
+    marginal_s = request.args.get('margin', '0.4')
 
     try:
         df_db = get_elspot()
